@@ -1,4 +1,4 @@
-﻿namespace Homework_19.Models
+﻿namespace Homework_21.Models
 {
     public class Contact
     {

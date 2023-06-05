@@ -1,6 +1,8 @@
-﻿using Homework_19.Models;
+﻿using Homework_21.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 public class PhoneBookController : Controller
 {
@@ -12,6 +14,7 @@ public class PhoneBookController : Controller
     }
 
     // GET: /PhoneBook/
+    [Authorize(Roles = "Anonymous")]
     public IActionResult Index()
     {
         var contacts = _context.Contacts.ToList();
@@ -19,6 +22,7 @@ public class PhoneBookController : Controller
     }
 
     // GET: /PhoneBook/Details/
+    [Authorize(Roles = "Anonymous,Authorized,Administrator")]
     public IActionResult Details(int id)
     {
         var contact = _context.Contacts.FirstOrDefault(c => c.ID == id);
@@ -30,6 +34,7 @@ public class PhoneBookController : Controller
     }
 
     // GET: /PhoneBook/Create
+    [Authorize(Roles = "Authorized,Administrator")]
     public IActionResult Create()
     {
         return View();
@@ -38,6 +43,7 @@ public class PhoneBookController : Controller
     // POST: /PhoneBook/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Authorized,Administrator")]
     public IActionResult Create(Contact contact)
     {
         if (ModelState.IsValid)
@@ -50,6 +56,7 @@ public class PhoneBookController : Controller
     }
 
     // GET: /PhoneBook/Edit/
+    [Authorize(Roles = "Administrator")]
     public IActionResult Edit(int id)
     {
         var contact = _context.Contacts.FirstOrDefault(c => c.ID == id);
@@ -63,6 +70,7 @@ public class PhoneBookController : Controller
     // POST: /PhoneBook/Edit/
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Administrator")]
     public IActionResult Edit(int id, Contact contact)
     {
         if (id != contact.ID)
@@ -94,6 +102,7 @@ public class PhoneBookController : Controller
     }
 
     // GET: /PhoneBook/Delete/
+    [Authorize(Roles = "Administrator")]
     public IActionResult Delete(int id)
     {
         var contact = _context.Contacts.FirstOrDefault(c => c.ID == id);
@@ -107,6 +116,7 @@ public class PhoneBookController : Controller
     // POST: /PhoneBook/Delete/
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Administrator")]
     public IActionResult DeleteConfirmed(int id)
     {
         var contact = _context.Contacts.Find(id);

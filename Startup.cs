@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 public class Startup
@@ -14,7 +15,21 @@ public class Startup
     {
         services.AddDbContext<PhoneBookContext>(options =>
             options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
+
         services.AddControllersWithViews();
+
+        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("Administrator", policy => policy.RequireRole("Administrator"));
+            options.AddPolicy("Authorized", policy => policy.RequireAuthenticatedUser());
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,7 +55,13 @@ public class Startup
         {
             endpoints.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=PhoneBook}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+            endpoints.MapControllerRoute(
+                name: "account",
+                pattern: "{controller=Account}/{action=Login}/{id?}");
+            endpoints.MapControllerRoute(
+                name: "user",
+                pattern: "{controller=User}/{action=Index}/{id?}");
         });
     }
 }
